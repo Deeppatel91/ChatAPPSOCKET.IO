@@ -1,11 +1,15 @@
-# 101415117 - Lab Test 1 (COMP-3133)
-
 ## Student Information
 - **Name:** Deep Patel  
 - **Student ID:** 101415117  
 - **Course:** COMP-3133  
 - **Lab Test:** LAB_TEST-1  
 - **GitHub Repository:** [101415117_lab_test1_chat_app](https://github.com/Deeppatel91/101415117_lab_test1_chat_app)
+
+## Technologies Used
+![VSCode](https://img.shields.io/badge/Visual_Studio_Code-0078D4?style=for-the-badge&logo=visual%20studio%20code&logoColor=white)
+![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
+![Socket.IO](https://img.shields.io/badge/Socket.IO-010101?style=for-the-badge&logo=socket.io&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
 
 ## Project Overview
 This project is a simple **chat application** that allows users to sign up, log in, and participate in chat rooms. It includes features such as real-time messaging, joining and leaving rooms, and a typing indicator.
@@ -36,25 +40,3 @@ This project is a simple **chat application** that allows users to sign up, log 
 1. Clone the repository:
    ```bash
    git clone https://github.com/Deeppatel91/101415117_lab_test1_chat_app.git
-   ```
-2. Navigate to the project directory:
-   ```bash
-   cd 101415117_lab_test1_chat_app
-   ```
-3. Install dependencies:
-   ```bash
-   npm install
-   ```
-4. Run the application:
-   ```bash
-   npm start
-   ```
-
-## Screenshots
-Refer to the **Screenshots.docx** file for visual references.
-
-## License
-This project is for academic purposes under **COMP-3133** at **Fanshawe College**.
-
----
-For any issues, please create an **issue** in the GitHub repository or contact me.
