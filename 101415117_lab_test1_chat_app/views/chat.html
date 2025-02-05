@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat Rooms</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        .message-container {
+            display: flex;
+            flex-direction: column;
+        }
+        .message {
+            max-width: 70%;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .message.current-user {
+            align-self: flex-end;
+            background-color: #007bff;
+            color: white;
+        }
+        .message.other-user {
+            align-self: flex-start;
+            background-color: #f8f9fa;
+            color: black;
+        }
+        .notification {
+            text-align: center;
+            color: #6c757d;
+            font-size: 0.875em;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Welcome, <span id="username" class="text-primary"></span></h4>
+                    </div>
+                    <div class="card-body">
+                        <h5>Available Rooms</h5>
+                        <div class="list-group" id="room-list">
+                            <button onclick="showJoinButton('devops')" class="list-group-item list-group-item-action">DevOps</button>
+                            <button onclick="showJoinButton('cloud-computing')" class="list-group-item list-group-item-action">Cloud Computing</button>
+                            <button onclick="showJoinButton('covid19')" class="list-group-item list-group-item-action">COVID-19</button>
+                            <button onclick="showJoinButton('sports')" class="list-group-item list-group-item-action">Sports</button>
+                            <button onclick="showJoinButton('nodejs')" class="list-group-item list-group-item-action">NodeJS</button>
+                        </div>
+                        <button id="join-room-btn" class="btn btn-success mt-3" style="display:none;" onclick="joinRoom()">Join Room</button>
+                    </div>
+                </div>
+                <button onclick="logout()" class="btn btn-danger mt-3">Logout</button>
+            </div>
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 id="current-room" class="mb-0">Select a Room</h4>
+                        <button id="leave-room-btn" class="btn btn-sm btn-warning" style="display:none;" onclick="leaveCurrentRoom()">Leave Room</button>
+                    </div>
+                    <div class="card-body message-container" id="chat-messages" style="height: 400px; overflow-y: scroll;"></div>
+                    <div class="card-footer">
+                        <div id="typing-indicator" class="text-muted small mb-2"></div>
+                        <div class="input-group">
+                            <input type="text" id="message-input" class="form-control" placeholder="Type a message..." disabled>
+                            <button onclick="sendMessage()" class="btn btn-primary" disabled>Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const socket = io({
+            query: { username: localStorage.getItem('username') }
+        });
+        
+        const username = localStorage.getItem('username');
+        let currentRoom = null;
+        let selectedRoom = null;
+        let typingTimer;
+
+        if (!username) {
+            window.location.href = '/login';
+        }
+
+        document.getElementById('username').textContent = username;
+
+        function showJoinButton(room) {
+            selectedRoom = room;
+            document.getElementById('join-room-btn').style.display = 'block';
+        }
+
+        async function joinRoom() {
+            if (currentRoom) {
+                socket.emit('leave_room', currentRoom);
+            }
+
+            socket.emit('join_room', selectedRoom);
+            currentRoom = selectedRoom;
+
+            document.getElementById('current-room').textContent = `Room: ${selectedRoom}`;
+            document.getElementById('leave-room-btn').style.display = 'block';
+            document.getElementById('message-input').disabled = false;
+            document.querySelector('button[onclick="sendMessage()"]').disabled = false;
+            document.getElementById('join-room-btn').style.display = 'none';
+
+            try {
+                const response = await fetch(`/room-history/${selectedRoom}`);
+                const messages = await response.json();
+                
+                const chatMessages = document.getElementById('chat-messages');
+                chatMessages.innerHTML = '';
+                
+                messages.forEach(msg => {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.classList.add('message', msg.from_user === username ? 'current-user' : 'other-user');
+                    messageDiv.innerHTML = `
+                        <strong>${msg.from_user}:</strong> 
+                        <span>${msg.message}</span>
+                    `;
+                    chatMessages.appendChild(messageDiv);
+                });
+
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            } catch (error) {
+                console.error('Failed to fetch room history:', error);
+            }
+        }
+
+        function leaveCurrentRoom() {
+            if (currentRoom) {
+                socket.emit('leave_room', currentRoom);
+                
+                document.getElementById('current-room').textContent = 'Select a Room';
+                document.getElementById('leave-room-btn').style.display = 'none';
+                document.getElementById('chat-messages').innerHTML = '';
+                document.getElementById('message-input').disabled = true;
+                document.querySelector('button[onclick="sendMessage()"]').disabled = true;
+                
+                currentRoom = null;
+            }
+        }
+
+        function sendMessage() {
+            const messageInput = document.getElementById('message-input');
+            const message = messageInput.value.trim();
+            
+            if (message && currentRoom) {
+                socket.emit('group_message', { 
+                    from_user: username, 
+                    room: currentRoom, 
+                    message 
+                });
+                messageInput.value = '';
+                document.getElementById('typing-indicator').textContent = '';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('username');
+            window.location.href = '/login';
+        }
+
+        document.getElementById('message-input').addEventListener('input', () => {
+            clearTimeout(typingTimer);
+            socket.emit('typing', { username, room: currentRoom });
+            
+            typingTimer = setTimeout(() => {
+                document.getElementById('typing-indicator').textContent = '';
+            }, 2000);
+        });
+
+        socket.on('new_group_message', (data) => {
+            const chatMessages = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', data.from_user === username ? 'current-user' : 'other-user');
+            messageDiv.innerHTML = `
+                <strong>${data.from_user}:</strong> 
+                <span>${data.message}</span>
+            `;
+            chatMessages.appendChild(messageDiv);
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        });
+
+        socket.on('room_notification', (data) => {
+            const chatMessages = document.getElementById('chat-messages');
+            const notificationDiv = document.createElement('div');
+            notificationDiv.classList.add('notification');
+            notificationDiv.textContent = data.message;
+            chatMessages.appendChild(notificationDiv);
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        });
+
+        socket.on('user_typing', (data) => {
+            if (data.room === currentRoom && data.username !== username) {
+                document.getElementById('typing-indicator').textContent = 
+                    `${data.username} is typing...`;
+            }
+        });
+    </script>
+</body>
+</html>
