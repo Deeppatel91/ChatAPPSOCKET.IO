@@ -13,7 +13,8 @@
 
 ## Project Overview
 This project is a simple **chat application** that allows users to sign up, log in, and participate in chat rooms. It includes features such as real-time messaging, joining and leaving rooms, and a typing indicator.
-
+## To see screenshots click this link:
+   [click here](https://github.com/Deeppatel91/101415117_lab_test1_chat_app/blob/main/screenshots-comp3133-labtest_1%20(1).pdf)
 ## Features
 
 ### 1. Signup Page
