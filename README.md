@@ -1,9 +1,3 @@
-## Student Information
-- **Name:** Deep Patel  
-- **Student ID:** 101415117  
-- **Course:** COMP-3133  
-- **Lab Test:** LAB_TEST-1  
-- **GitHub Repository:** [101415117_lab_test1_chat_app](https://github.com/Deeppatel91/101415117_lab_test1_chat_app)
 
 ## Technologies Used
 ![VSCode](https://img.shields.io/badge/Visual_Studio_Code-0078D4?style=for-the-badge&logo=visual%20studio%20code&logoColor=white)
@@ -14,7 +8,7 @@
 ## Project Overview
 This project is a simple **chat application** that allows users to sign up, log in, and participate in chat rooms. It includes features such as real-time messaging, joining and leaving rooms, and a typing indicator.
 ## To see screenshots click this link:
-   [click here](https://github.com/Deeppatel91/101415117_lab_test1_chat_app/blob/main/screenshots-comp3133-labtest_1%20(1).pdf)
+   [click here](https://github.com/Deeppatel91/ChatAPPSOCKET.IO/blob/main/screenshots-comp3133-labtest_1%20(1).pdf)
 ## Features
 
 ### 1. Signup Page
@@ -36,8 +30,3 @@ This project is a simple **chat application** that allows users to sign up, log 
 - Displays real-time typing status to all users in the chat room.
   - **Example:** "Ryan is typing..." in the **COVID-19 Room Chat**.
   - **Example:** "Dorsey is typing a response to Ryan..."—visible to all users in the chat room.
-
-## Installation & Setup
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Deeppatel91/101415117_lab_test1_chat_app.git
